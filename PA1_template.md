@@ -1,12 +1,22 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Marilyn Pratt"
-date: "December 18, 2015"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Marilyn Pratt  
+December 18, 2015  
+## Introduction
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+## Data
+
+The variables included in this dataset are:
+
+- steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+
+- date: The date on which the measurement was taken in      YYYY-MM-DD format
+
+- interval: Identifier for the 5-minute interval in which measurement was taken
+    
 ## Loading and preprocessing the data
+
 1.  Load the Data
 
     a.Data should be [downloaded here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) into activity.zip file
@@ -86,7 +96,7 @@ abline(v = meantotsteps, col = "red", lwd = 4, lty = 3)
 abline(v = medtotsteps, col = "black", lwd = 1, lty = 5)
 ```
 
-![plot of chunk Hist1](figure/Hist1-1.png) 
+![](PA1_template_files/figure-html/Hist1-1.png) 
 
 Dotted Red line shows mean
 
@@ -103,7 +113,7 @@ plot (as.numeric(names(meanintervals)), as.numeric(meanintervals), type = "l", l
       ylab = "Mean number of steps")
 ```
 
-![plot of chunk timeplot](figure/timeplot-1.png) 
+![](PA1_template_files/figure-html/timeplot-1.png) 
 
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -129,6 +139,13 @@ The total number of rows with NAs is **2304**
 
 2. Devise a strategy for filling in all of the missing values in the dataset. 
 
+-  The total number of missing values was calculated using the original unprocessed dataset and counting the number of rows where the steps has a value = NA.
+
+-  To impute the missing values in the dataset, the following was executed:
+  1.  determine which rows have NAs
+  2.  create a function to generate values to replace the NAs
+  3. Update of the rows where steps=NA with the calculated mean.
+  
 
 
 ```r
@@ -136,21 +153,13 @@ The total number of rows with NAs is **2304**
  list <- which( activity$steps %in% NA)
 #create a function to generate values to replace the NAs
 library(data.table)
-```
-
-```
-## data.table 1.9.4  For help type: ?data.table
-## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
-```
-
-```r
 activity.new<-data.table(activity)
 steps_per_day <- activity.new[,list(steps=sum(steps, na.rm=TRUE)),by=date]
 mean_over_days <- activity.new[, list(mean = mean(steps, na.rm = TRUE)), by = interval]
 imputed_data <- activity.new
 na_data <- is.na(imputed_data)
 na_intervals <- imputed_data$interval[na_data]
-# Make imputed data replacing NAs with 5-minute average
+# Create imputed data replacing NAs with 5-minute average
 imputed_data[na_data] <- sapply(na_intervals, 
                                 function(x) mean_over_days[interval==x,][["mean"]])
 ```
@@ -184,7 +193,7 @@ head(imputed_data)
 new.activity <- imputed_data
 ```
 
-4. Make a histogram of the total number of steps taken each day and calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+4. Make a histogram of the total number of steps taken each day and calculate and report the mean and median total number of steps taken per day. Check if these values differ from the estimates from the first part of the assignment. What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
     a. Histogram for the new complete data set:
     b. Mean and median total number of steps taken per day for the        new data set:
@@ -196,7 +205,7 @@ hist(tapply(new.activity$steps, new.activity$date, sum), main = "",
      xlim = c(0, 25000), col = "green")
 ```
 
-![plot of chunk Figure 3](figure/Figure 3-1.png) 
+![](PA1_template_files/figure-html/Figure 3-1.png) 
     
    
     
@@ -226,7 +235,7 @@ After imputation there is a slight increase in the median total number of steps 
 
  1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
- a) Format the date column and create a new column with names of the days:
+  a. Format the date column and create a new column with names of the days:
 
 ```r
 new.activity$date <- as.Date(new.activity$date) #format the date column
@@ -234,7 +243,7 @@ Days <- weekdays(new.activity$date) # determine the day of the week for each dat
 new.activity$Day <- Days # create a new column with the names of the days
 ```
 
-b) Create the factor variable:
+  b.  Create the factor variable:
 
 ```r
 weekday <- new.activity$Day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
@@ -256,7 +265,7 @@ str(new.activity)
 ##  - attr(*, ".internal.selfref")=<externalptr>
 ```
 
-### 2. Make a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days. 
+### 2. Make a panel plot containing a time series plot of the 5-minute intervals and the average number of steps taken, averaged across all weekday days or weekend days. 
 
   a) Calculate the average number of steps for weekdays or weekend days
 
@@ -284,5 +293,9 @@ xyplot(meansteps ~ interval | Day, data = new.activity, type = "l",
        xlab = "Interval", ylab = "Number of steps", layout = c(1, 2)) 
 ```
 
-![plot of chunk Figure 4](figure/Figure 4-1.png) 
+![](PA1_template_files/figure-html/Figure 4-1.png) 
 
+### Observations:  
+By comparing plots of weekday and weekend data:  
+- The peak interval 0835 occurs on weekdays and might be attributed to walking to work or to transport station
+- Weekends have more steps than weekdays which might be due to more physical weekend activity rather than desk sitting
