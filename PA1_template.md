@@ -1,6 +1,11 @@
-# Reproducible Research: Peer Assessment 1
-Marilyn Pratt  
-December 18, 2015  
+---
+title: "Reproducible Research: Peer Assessment 1"
+author: "Marilyn Pratt"
+date: "December 18, 2015"
+output: 
+  html_document:
+    keep_md: true
+---
 ## Introduction
 
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
@@ -96,7 +101,7 @@ abline(v = meantotsteps, col = "red", lwd = 4, lty = 3)
 abline(v = medtotsteps, col = "black", lwd = 1, lty = 5)
 ```
 
-![](PA1_template_files/figure-html/Hist1-1.png) 
+![plot of chunk Hist1](figure/Hist1-1.png) 
 
 Dotted Red line shows mean
 
@@ -113,7 +118,7 @@ plot (as.numeric(names(meanintervals)), as.numeric(meanintervals), type = "l", l
       ylab = "Mean number of steps")
 ```
 
-![](PA1_template_files/figure-html/timeplot-1.png) 
+![plot of chunk timeplot](figure/timeplot-1.png) 
 
 ## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -153,6 +158,14 @@ The total number of rows with NAs is **2304**
  list <- which( activity$steps %in% NA)
 #create a function to generate values to replace the NAs
 library(data.table)
+```
+
+```
+## data.table 1.9.4  For help type: ?data.table
+## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
+```
+
+```r
 activity.new<-data.table(activity)
 steps_per_day <- activity.new[,list(steps=sum(steps, na.rm=TRUE)),by=date]
 mean_over_days <- activity.new[, list(mean = mean(steps, na.rm = TRUE)), by = interval]
@@ -205,7 +218,7 @@ hist(tapply(new.activity$steps, new.activity$date, sum), main = "",
      xlim = c(0, 25000), col = "green")
 ```
 
-![](PA1_template_files/figure-html/Figure 3-1.png) 
+![plot of chunk Figure 3](figure/Figure 3-1.png) 
     
    
     
@@ -293,7 +306,7 @@ xyplot(meansteps ~ interval | Day, data = new.activity, type = "l",
        xlab = "Interval", ylab = "Number of steps", layout = c(1, 2)) 
 ```
 
-![](PA1_template_files/figure-html/Figure 4-1.png) 
+![plot of chunk Figure 4](figure/Figure 4-1.png) 
 
 ### Observations:  
 By comparing plots of weekday and weekend data:  
